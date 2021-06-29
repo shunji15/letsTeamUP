@@ -6,96 +6,133 @@ const twoTeams = document.querySelector('.by-2');
 const threeTeams = document.querySelector('.by-3');
 const fourTeams = document.querySelector('.by-4');
 const fiveTeams = document.querySelector('.by-5');
-const sevenTeams = document.querySelector('.by-7');
+const customBtn = document.querySelector('.custom');
+const customInput = document.querySelector('.teamUpNum');
 const div3 = document.querySelector('.container3');
 
-let arrayNames = [];
+
+const arrayNames = [];
+
 
 const addNameToList = (event) => {
-    event.preventDefault();
-    // let targ = event.target;
-    if (textInput.value != "") {
-    arrayNames.push(textInput.value);
-    //create div 
-    let newDiv = document.createElement('div');
-    newDiv.classList.add('new-div');
-    nameUL.appendChild(newDiv);
-    //create li
-    let newName = document.createElement('li');
-    newName.classList.add('new-name');
-    newName.innerText = textInput.value;
-    newDiv.appendChild(newName);
-    //create delete button
-    let deleteButton = document.createElement('button');
-    deleteButton.classList.add('delete-button');
-    deleteButton.innerHTML = `<i class="fas fa-minus-circle"></i>`;
-    newDiv.appendChild(deleteButton);
+        event.preventDefault();
+        
+        // let targ = event.target;
+        if (textInput.value != "") {
+        arrayNames.push(textInput.value);
 
-    textInput.value = "";
-    }
+        nameUL.innerHTML += `
+            <div class="new-div">
+                <li class="new-name">
+                ${textInput.value}
+                </li>
+                <button class="delete-button">
+                    <i class="fas fa-minus-circle"></i>
+                </button>
+            </div>
+        `;
+
+        textInput.value = "";
+        }
 }
+
 
 
 const deleteList = (event) => {
-    const targ = event.target;
-    if (targ.classList[0] === "delete-button"){
-        const nameDiv = targ.parentElement;
-        nameDiv.remove();
-    }
+        const targ = event.target;
+        if (targ.classList[0] === "delete-button"){
+            const nameDiv = targ.parentElement;
+            nameDiv.remove();
 
-    for(let i=0; i < arrayNames.length; i++) {
-        const nameDiv = targ.parentElement;
-        if(arrayNames[i] === nameDiv.childNodes[0].innerText) {
-            arrayNames.splice(i,1);
+            const str = nameDiv.children[0].innerText.trim();
+            const num = arrayNames.indexOf(str);
+            arrayNames.splice(num,1);
         }
-    }
+
+        
+
+        // for(let i=0; i < arrayNames.length; i++) {
+        //     const nameDiv = targ.parentElement;
+        //     if(arrayNames[i] === nameDiv.childNodes[0].innerText) {
+        //         arrayNames.splice(i,1);
+        //     }
+        // }
+
+        console.log(arrayNames);
 }
 
 const byOneRandom = (event) => {
-    event.preventDefault();
-    div3.innerHTML = "";
+        event.preventDefault();
+        div3.innerHTML = "";
+       
 
-    let randomName = arrayNames[Math.floor(Math.random() * arrayNames.length)];
-    
-    let newDiv = document.createElement('div');
-    newDiv.classList.add('lucky-one');
-    div3.appendChild(newDiv);
+        let randomName = arrayNames[Math.floor(Math.random() * arrayNames.length)];
+        
+        let newDiv = document.createElement('div');
+        newDiv.classList.add('lucky-one');
+        div3.appendChild(newDiv);
 
-    let winner = document.createElement('h1');
-    winner.classList.add('winnerby-1');
-    winner.innerText = randomName;
-    newDiv.appendChild(winner);
+        let winner = document.createElement('h1');
+        winner.classList.add('winnerby-1');
+        winner.innerText = randomName;
+        newDiv.appendChild(winner);
 }
 
+
+const randomizeArray = (arr) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+}
+
+const createTeamDiv = (str, num) => {
+    let teamDiv = document.createElement('div');
+    teamDiv.classList.add(str);
+    div3.appendChild(teamDiv);
+    
+    // add team number
+    let teamNum = document.createElement('p');
+    teamNum.innerText = `TEAM ${num}`;
+    teamNum.classList.add('teamNumber');
+    teamDiv.appendChild(teamNum);
+    
+    return teamDiv;
+}
+
+const addNameToDiv = (arr, index, div) => {
+    if(arr[index] === null || arr[index] === undefined) {
+        let name = document.createElement('h5');
+        name.innerText = "";
+        div.appendChild(name);
+    } else {
+        let name = document.createElement('h5');
+        name.innerText = arr[index];
+        div.appendChild(name);
+    }
+    
+}
+
+
 const byTwoRandom = (event) => {
-    event.preventDefault();
-    div3.innerHTML = "";
+        event.preventDefault();
+        div3.innerHTML = "";
 
-    let totalNum =  Math.ceil((arrayNames.length)/2);
-
-    let newArray = arrayNames;
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-
-    let x=0
-    for (let i=0; i < totalNum; i++) {
-        let teamDiv = document.createElement('div');
-        teamDiv.classList.add('team2');
-        div3.appendChild(teamDiv);
-
+        let newArray =  randomizeArray(arrayNames);
         
-        let name1 = document.createElement('h5');
-        name1.innerText = newArray[x];
-        teamDiv.appendChild(name1);
+        let x=0;
+        let num = 1;
+        while(x<newArray.length) {
+            let teamDiv = createTeamDiv('team2', num);
+            
+            addNameToDiv(newArray, x, teamDiv);
+            addNameToDiv(newArray, x+1, teamDiv);
 
-        let name2 = document.createElement('h5');
-        name2.innerText = newArray[x+1];
-        teamDiv.appendChild(name2);
+            num++;
+            x+=2;
+        }
 
-        x+=2;
-    }
 }
 
 
@@ -103,171 +140,90 @@ const byThreeRandom = (event) => {
     event.preventDefault();
     div3.innerHTML = "";
 
-    let totalNum =  Math.ceil((arrayNames.length)/3);
-
-    let newArray = arrayNames;
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-
-    let x = 0;
+    let newArray = randomizeArray(arrayNames);
    
-    for (let i=0; i < totalNum; i++) {
-        let teamDiv = document.createElement('div');
-        teamDiv.classList.add('team2');
-        div3.appendChild(teamDiv);
+    let x=0;
+    let num=1;
+        while(x<newArray.length) {
+            let teamDiv = createTeamDiv('team2',num);
+            
+            addNameToDiv(newArray, x, teamDiv);
+            addNameToDiv(newArray, x+1, teamDiv);
+            addNameToDiv(newArray, x+2, teamDiv);
 
-        let name1 = document.createElement('h5');
-        name1.innerText = newArray[x];
-        teamDiv.appendChild(name1);
-        
-        let name2 = document.createElement('h5');
-        name2.innerText = newArray[x+1];
-        teamDiv.appendChild(name2);
+            num++;
+            x+=3;
+        }
 
-        let name3 = document.createElement('h5');
-        name3.innerText = newArray[x+2];
-        teamDiv.appendChild(name3);
-
-        x+=3;
-        
-    }
 }
 
 const byFourRandom = (event) => {
     event.preventDefault();
     div3.innerHTML = "";
 
-    let totalNum =  Math.ceil((arrayNames.length)/4);
-
-    let newArray = arrayNames;
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-
-    let x = 0;
+    let newArray = randomizeArray(arrayNames);
    
-    for (let i=0; i < totalNum; i++) {
-        let teamDiv = document.createElement('div');
-        teamDiv.classList.add('team2');
-        div3.appendChild(teamDiv);
+    let x=0;
+    let num=1;
+        while(x<newArray.length) {
+            let teamDiv = createTeamDiv('team2', num);
+            
+            addNameToDiv(newArray, x, teamDiv);
+            addNameToDiv(newArray, x+1, teamDiv);
+            addNameToDiv(newArray, x+2, teamDiv);
+            addNameToDiv(newArray, x+3, teamDiv);
 
-        let name1 = document.createElement('h5');
-        name1.innerText = newArray[x];
-        teamDiv.appendChild(name1);
-        
-        let name2 = document.createElement('h5');
-        name2.innerText = newArray[x+1];
-        teamDiv.appendChild(name2);
-
-        let name3 = document.createElement('h5');
-        name3.innerText = newArray[x+2];
-        teamDiv.appendChild(name3);
-
-        let name4 = document.createElement('h5');
-        name4.innerText = newArray[x+3];
-        teamDiv.appendChild(name4);
-
-        x+=4;
-        
-    }
+            num++;
+            x+=4;
+        }
 }
 
 const byFiveRandom = (event) => {
     event.preventDefault();
     div3.innerHTML = "";
 
-    let totalNum =  Math.ceil((arrayNames.length)/5);
-
-    let newArray = arrayNames;
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-
-    let x = 0;
+    let newArray = randomizeArray(arrayNames);
    
-    for (let i=0; i < totalNum; i++) {
-        let teamDiv = document.createElement('div');
-        teamDiv.classList.add('team2');
-        div3.appendChild(teamDiv);
+    let x=0;
+    let num=1;
+        while(x<newArray.length) {
+            let teamDiv = createTeamDiv('team2',num);
+            
+            addNameToDiv(newArray, x, teamDiv);
+            addNameToDiv(newArray, x+1, teamDiv);
+            addNameToDiv(newArray, x+2, teamDiv);
+            addNameToDiv(newArray, x+3, teamDiv);
+            addNameToDiv(newArray, x+4, teamDiv);
 
-        let name1 = document.createElement('h5');
-        name1.innerText = newArray[x];
-        teamDiv.appendChild(name1);
-        
-        let name2 = document.createElement('h5');
-        name2.innerText = newArray[x+1];
-        teamDiv.appendChild(name2);
-
-        let name3 = document.createElement('h5');
-        name3.innerText = newArray[x+2];
-        teamDiv.appendChild(name3);
-
-        let name4 = document.createElement('h5');
-        name4.innerText = newArray[x+3];
-        teamDiv.appendChild(name4);
-
-        let name5 = document.createElement('h5');
-        name5.innerText = newArray[x+4];
-        teamDiv.appendChild(name5);
-
-        x+=5;
-        
-    }
+            num++;
+            x+=5;
+        }
 }
 
-const bySevenRandom = (event) => {
+
+
+const byCustomRandom = (event) => {
     event.preventDefault();
     div3.innerHTML = "";
 
-    let totalNum =  Math.ceil((arrayNames.length)/7);
 
-    let newArray = arrayNames;
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    customNum = parseInt(customInput.value);   
+    
+    let newArray = randomizeArray(arrayNames);
+
+    let x=0;
+    let num=1;
+    while(x<newArray.length) {
+        let teamDiv = createTeamDiv('team2', num);
+    
+        for(i=x; i<=x+customNum-1; i++) {
+            addNameToDiv(newArray, i, teamDiv)
+        };
+
+        num++;
+        x+=customNum;
     }
 
-    let x = 0;
-   
-    for (let i=0; i < totalNum; i++) {
-        let teamDiv = document.createElement('div');
-        teamDiv.classList.add('team2');
-        div3.appendChild(teamDiv);
-
-        let name1 = document.createElement('h5');
-        name1.innerText = newArray[x];
-        teamDiv.appendChild(name1);
-        
-        let name2 = document.createElement('h5');
-        name2.innerText = newArray[x+1];
-        teamDiv.appendChild(name2);
-
-        let name3 = document.createElement('h5');
-        name3.innerText = newArray[x+2];
-        teamDiv.appendChild(name3);
-
-        let name4 = document.createElement('h5');
-        name4.innerText = newArray[x+3];
-        teamDiv.appendChild(name4);
-
-        let name5 = document.createElement('h5');
-        name5.innerText = newArray[x+4];
-        teamDiv.appendChild(name5);
-
-        let name6 = document.createElement('h5');
-        name6.innerText = newArray[x+5];
-        teamDiv.appendChild(name6);
-
-        let name7 = document.createElement('h5');
-        name7.innerText = newArray[x+6];
-        teamDiv.appendChild(name7);
-
-        x+=7;
-    }
 }
 
 nameUL.addEventListener('click', deleteList);
@@ -277,5 +233,6 @@ twoTeams.addEventListener('click', byTwoRandom);
 threeTeams.addEventListener('click', byThreeRandom);
 fourTeams.addEventListener('click', byFourRandom);
 fiveTeams.addEventListener('click', byFiveRandom);
-sevenTeams.addEventListener('click', bySevenRandom);
+customBtn.addEventListener('click', byCustomRandom);
+
 
